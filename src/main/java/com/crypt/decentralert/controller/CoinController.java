@@ -27,10 +27,6 @@ public class CoinController {
         return coinRepository.findAll();
     }
 
-    @GetMapping("/{ticker}")
-    public Coin getCoin(@PathVariable String ticker){
-        return coinRepository.findBySymbol(ticker);
-    }
 
     @PostMapping
     public ResponseEntity createCoin(@RequestBody Coin coin) throws URISyntaxException {
@@ -38,10 +34,10 @@ public class CoinController {
         return ResponseEntity.created(new URI("/coins/" + newCoin.getId())).body(newCoin);
     }
 
-    @PostMapping("/_load")
-    public void loadCoins(){
-        coinService.loadCoins();
-    }
+//    @PostMapping("/_load")
+//    public void loadCoins(){
+//        coinService.loadCoins();
+//    }
 
     @PutMapping("/{ticker}")
     public  ResponseEntity updateCoin(@PathVariable String ticker, @RequestBody Coin coin){
@@ -56,6 +52,11 @@ public class CoinController {
     public ResponseEntity deleteCoin(@PathVariable String ticker){
         coinRepository.deleteBySymbol(ticker);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{symbol}")
+    public Object getCoinBySymbol(@PathVariable String symbol){
+        return coinService.getCoinBySymbol(symbol);
     }
 
 }

@@ -1,29 +1,10 @@
-package com.crypt.decentralert.entity;
+package com.crypt.decentralert.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.annotations.NaturalId;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.io.Serializable;
 
-@Entity
-@Table(name = "coin")
-public class Coin implements Serializable {
-
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+public class CoinResponse implements Serializable {
 
     public String getSymbol() {
         return symbol;
@@ -58,7 +39,6 @@ public class Coin implements Serializable {
     }
 
     @JsonProperty("symbol")
-    @NaturalId
     private String symbol;
     @JsonProperty("price_24h")
     private float price24h;
@@ -66,8 +46,4 @@ public class Coin implements Serializable {
     private float volume24h;
     @JsonProperty("last_trade_price")
     private float lastTradePrice;
-
-
-
-
 }
