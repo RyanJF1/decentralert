@@ -2,6 +2,7 @@ package com.crypt.decentralert.controller;
 
 import com.crypt.decentralert.entity.Coin;
 import com.crypt.decentralert.repository.CoinRepository;
+import com.crypt.decentralert.response.CoinResponse;
 import com.crypt.decentralert.service.CoinService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,9 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Set;
 
 @RestController
-@RequestMapping("/coins")
+@RequestMapping("/api")
 public class CoinController {
 
     private final CoinRepository coinRepository;
@@ -22,9 +24,11 @@ public class CoinController {
         this.coinService = coinService;
     }
 
-    @GetMapping
-    public List<Coin> getCoins(){
-        return coinRepository.findAll();
+    @GetMapping("/coins")
+    public Set<CoinResponse> getCoins(){
+
+         Set<CoinResponse> coins = coinService.getAllCoins();
+        return coins;
     }
 
 
@@ -55,7 +59,7 @@ public class CoinController {
     }
 
     @GetMapping("/{symbol}")
-    public Object getCoinBySymbol(@PathVariable String symbol){
+    public CoinResponse getCoinBySymbol(@PathVariable String symbol){
         return coinService.getCoinBySymbol(symbol);
     }
 

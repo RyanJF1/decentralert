@@ -8,7 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.crypt.decentralert.config.Constant.BLOCKCHAIN_API;
 
@@ -39,5 +42,18 @@ public class CoinService {
         coin.setVolume24h(newCoin.getVolume24h());
         coinRepository.save(coin);
         return coinMapper.toCoinResponse(coin);
+    }
+
+    public Set<CoinResponse> getAllCoins(){
+        List<Coin> coins = coinRepository.findAll();
+        Set<CoinResponse> coinResponses = new HashSet<>();
+        return coins.stream().map(coin -> {
+            CoinResponse response = new CoinResponse();
+            response.setLastTradePrice(coin.getLastTradePrice());
+            response.setSymbol(coin.getSymbol());
+            response.setVolume24h(coin.getVolume24h());
+            response.setPrice24h(coin.getPrice24h());
+            return response;
+        }).collect(Collectors.toSet());
     }
 }
