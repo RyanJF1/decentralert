@@ -4,6 +4,7 @@ import com.crypt.decentralert.entity.Coin;
 import com.crypt.decentralert.repository.CoinRepository;
 import com.crypt.decentralert.response.CoinResponse;
 import com.crypt.decentralert.service.CoinService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,35 +33,43 @@ public class CoinController {
     }
 
 
-    @PostMapping
-    public ResponseEntity createCoin(@RequestBody Coin coin) throws URISyntaxException {
+    @PostMapping("/coins")
+    public ResponseEntity<?> createCoin(@RequestBody Coin coin) throws URISyntaxException {
         Coin newCoin = coinRepository.save(coin);
-        return ResponseEntity.created(new URI("/coins/" + newCoin.getId())).body(newCoin);
-    }
-
-//    @PostMapping("/_load")
-//    public void loadCoins(){
-//        coinService.loadCoins();
-//    }
-
-    @PutMapping("/{ticker}")
-    public  ResponseEntity updateCoin(@PathVariable String ticker, @RequestBody Coin coin){
-        Coin updateCoin = coinRepository.findBySymbol(ticker);
-        updateCoin.setLastTradePrice(coin.getLastTradePrice());
-        updateCoin = coinRepository.save(updateCoin);
-
-        return ResponseEntity.ok(updateCoin);
-    }
-
-    @DeleteMapping("/{ticker}")
-    public ResponseEntity deleteCoin(@PathVariable String ticker){
-        coinRepository.deleteBySymbol(ticker);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{symbol}")
-    public CoinResponse getCoinBySymbol(@PathVariable String symbol){
-        return coinService.getCoinBySymbol(symbol);
+    @PostMapping("/coins/_load")
+    public ResponseEntity<?> loadCoins(){
+        coinService.loadCoins();
+        return ResponseEntity.ok().build();
+    }
+
+//    @PutMapping("/{ticker}")
+//    public  ResponseEntity updateCoin(@PathVariable String ticker, @RequestBody Coin coin){
+//        Coin updateCoin = coinRepository.findBySymbol(ticker);
+////        updateCoin.setLastTradePrice(coin.getLastTradePrice());
+//        updateCoin = coinRepository.save(updateCoin);
+//
+//        return ResponseEntity.ok(updateCoin);
+//    }
+
+//    @DeleteMapping("/{ticker}")
+//    public ResponseEntity deleteCoin(@PathVariable String ticker){
+//        coinRepository.deleteBySymbol(ticker);
+//        return ResponseEntity.ok().build();
+//    }
+
+//    @GetMapping("/{symbol}")
+//    public CoinResponse getCoinBySymbol(@PathVariable String symbol){
+//        return coinService.getCoinBySymbol(symbol);
+//    }
+
+    @RequestMapping(value = "/btcusd", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CoinResponse> getBtcCoin(){
+
+        return ResponseEntity.ok().body(coinService.getBtcCoin());
     }
 
 }

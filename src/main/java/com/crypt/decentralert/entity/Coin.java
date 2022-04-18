@@ -3,18 +3,16 @@ package com.crypt.decentralert.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.NaturalId;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "coin")
 public class Coin implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
     public Long getId() {
@@ -59,6 +57,7 @@ public class Coin implements Serializable {
 
     @JsonProperty("symbol")
     @NaturalId
+    @Column(name = "symbol", unique=true)
     private String symbol;
     @JsonProperty("price_24h")
     private float price24h;

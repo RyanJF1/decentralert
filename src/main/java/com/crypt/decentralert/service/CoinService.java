@@ -4,21 +4,23 @@ import com.crypt.decentralert.entity.Coin;
 import com.crypt.decentralert.mapper.CoinMapper;
 import com.crypt.decentralert.repository.CoinRepository;
 import com.crypt.decentralert.response.CoinResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.crypt.decentralert.config.Constant.BLOCKCHAIN_API;
+import static com.crypt.decentralert.config.Constant.CRYPTOWATCH_API;
+
 
 @Service
 public class CoinService {
 
-
+@Autowired
     private final CoinRepository coinRepository;
     private final CoinMapper coinMapper;
 
@@ -26,22 +28,23 @@ public class CoinService {
         this.coinRepository = coinRepository;
         this.coinMapper = coinMapper;
     }
-
-//    public Set<CoinResponse> loadCoins(){
-//        RestTemplate restTemplate = new RestTemplate();
-//        String coins = restTemplate.getForObject(BLOCKCHAIN_API + "/tickers", String.class);
-//    }
-
-    public CoinResponse getCoinBySymbol(String symbol){
-        Coin coin = coinRepository.findBySymbol(symbol);
+@Transactional
+    public void loadCoins(){
+        List<Coin> coins = new ArrayList<>();
         RestTemplate restTemplate = new RestTemplate();
-        Coin newCoin = restTemplate.getForObject(BLOCKCHAIN_API + "/tickers/" + symbol.toUpperCase(), Coin.class);
+        ResponseEntity<Coin[]> objects = restTemplate.getForEntity(BLOCKCHAIN_API + "/tickers", Coin[].class);
+        Coin[] coinObjects = objects.getBody();
+        coins = coinMapper.toCoinEntity(coinObjects);
+        coinRepository.saveAllAndFlush(coins);
+    }
+
+    public CoinResponse getBtcCoin(){
+        CoinResponse response = new CoinResponse();
+        RestTemplate restTemplate = new RestTemplate();
+        CoinResponse newCoin = restTemplate.getForObject(CRYPTOWATCH_API + "/markets/kraken/btcusd/summary", CoinResponse.class);
         assert newCoin != null;
-        coin.setLastTradePrice(newCoin.getLastTradePrice());
-        coin.setPrice24h(newCoin.getPrice24h());
-        coin.setVolume24h(newCoin.getVolume24h());
-        coinRepository.save(coin);
-        return coinMapper.toCoinResponse(coin);
+
+        return response;
     }
 
     public Set<CoinResponse> getAllCoins(){
