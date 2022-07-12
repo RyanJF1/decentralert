@@ -1,6 +1,6 @@
 package com.crypt.decentralert.config;
 
-import com.crypt.decentralert.mapper.CoinMapper;
+import com.crypt.decentralert.mapper.WalletMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
 
     @Bean
-    public CoinMapper coinMapper() {
-        return new CoinMapper();
+    public WalletMapper walletMapper() {
+        return new WalletMapper();
     }
 }
