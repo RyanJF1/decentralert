@@ -1,6 +1,7 @@
 package com.crypt.decentralert.controller;
 
 import com.crypt.decentralert.request.AddressRequest;
+import com.crypt.decentralert.request.AlchemyApiRequest;
 import com.crypt.decentralert.request.GetAssetTransfersRequest;
 import com.crypt.decentralert.response.AddressResponse;
 import com.crypt.decentralert.response.FetchAddressResponse;
@@ -56,7 +57,7 @@ public class AddressController {
     }
 
     @PostMapping(value = "/address/_getAssetTransfers", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAssetTransfers(@RequestBody LinkedHashMap<String, Object> request) throws NoSuchFieldException {
+    public ResponseEntity<?> getAssetTransfers(@RequestBody AlchemyApiRequest request) {
         GetAssetTransfersResponse response = addressService.getAssetTransfers(request);
         return ResponseEntity.ok().body(response);
     }

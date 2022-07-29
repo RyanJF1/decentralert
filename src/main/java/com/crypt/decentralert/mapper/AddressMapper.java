@@ -3,6 +3,7 @@ package com.crypt.decentralert.mapper;
 import com.crypt.decentralert.entity.Address;
 import com.crypt.decentralert.request.AddressRequest;
 import com.crypt.decentralert.request.GetAssetTransfersRequest;
+import com.crypt.decentralert.request.ParamsRequest;
 import com.crypt.decentralert.response.AddressResponse;
 import net.minidev.json.JSONObject;
 import org.springframework.context.annotation.Bean;
@@ -49,7 +50,6 @@ public class AddressMapper {
         return addressList;
     }
 
-
     public Address toAddressEntity(AddressRequest addressRequest){
         Address address = new Address();
         address.setAddressId(addressRequest.getAddressId());
@@ -57,8 +57,4 @@ public class AddressMapper {
         return address;
     }
 
-    public LinkedHashMap<String, Object> toGetAssetTransfersRequest(Object request){
-        Optional<Field> field = Arrays.stream(request.getClass().getDeclaredFields()).findFirst();
-        return new LinkedHashMap<>();
-    }
 }

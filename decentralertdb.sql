@@ -1,4 +1,4 @@
-CREATE TABLE `wallet` (
+CREATE TABLE `address` (
                           `id` int NOT NULL AUTO_INCREMENT,
                           `wallet_id` nvarchar(255) NOT NULL,
                           `nickname` nvarchar(255) NOT NULL,

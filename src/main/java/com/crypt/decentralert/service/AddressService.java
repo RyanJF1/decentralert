@@ -4,6 +4,7 @@ import com.crypt.decentralert.entity.Address;
 import com.crypt.decentralert.mapper.AddressMapper;
 import com.crypt.decentralert.repository.AddressRepository;
 import com.crypt.decentralert.request.AddressRequest;
+import com.crypt.decentralert.request.AlchemyApiRequest;
 import com.crypt.decentralert.request.GetAssetTransfersRequest;
 import com.crypt.decentralert.request.ParamsRequest;
 import com.crypt.decentralert.response.AddressResponse;
@@ -41,7 +42,7 @@ public class AddressService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     Logger logger = LoggerFactory.getLogger(AddressService.class);
     private final String BLOCKCHAIN_API_URL = "https://blockchain.info";
-    private final String ALCHEMY_API_URL = "https://eth-mainnet.alchemyapi.io/v2/" + System.getenv("ALCHEMY_API_KEY");
+    private final String ALCHEMY_API_URL = "https://eth-mainnet.alchemyapi.io/v2/aiqnoMKlsqyjuze2WPf7qRws-wQzanhQ";
 
     public AddressService(AddressRepository addressRepository, AddressMapper addressMapper) {
         this.addressRepository = addressRepository;
@@ -97,16 +98,24 @@ public class AddressService {
         addressRepository.delete(address);
     }
 
-    public GetAssetTransfersResponse getAssetTransfers(HashMap<String, Object> request) throws NoSuchFieldException {
+    public GetAssetTransfersResponse getAssetTransfers(AlchemyApiRequest request){
+        AlchemyApiRequest apiRequest = new AlchemyApiRequest();
         ParamsRequest params = new ParamsRequest();
         params.setFromAddress("0x3f5CE5FBFe3E9af3971dD833D26bA9b5C936f0bE");
         params.setContractAddresses(Collections.singletonList("0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9"));
         params.setCategory(Collections.singletonList("external"));
-        Gson gson = new Gson();
-        request.put("params", Collections.singletonList(params));
-        Object obj = gson.toJson(request);
-        RestTemplate restTemplate = new RestTemplate();
-        GetAssetTransfersResponse getAssetTransfersResponse = restTemplate.postForObject( "https://eth-mainnet.alchemyapi.io/v2/aiqnoMKlsqyjuze2WPf7qRws-wQzanhQ", request, GetAssetTransfersResponse.class);
+        apiRequest.setParams(params);
+        apiRequest.setMethod("alchemy_getAssetTransfers");
+        GetAssetTransfersResponse getAssetTransfersResponse = callAlchemyApi(request, GetAssetTransfersResponse.class);
         return getAssetTransfersResponse;
     }
+
+    private <T> T callAlchemyApi(AlchemyApiRequest request, Class<T> returnType){
+        Gson gson = new Gson();
+        Object obj = gson.toJson(request);
+
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate.postForObject( ALCHEMY_API_URL, obj, returnType);
+    }
+
 }
