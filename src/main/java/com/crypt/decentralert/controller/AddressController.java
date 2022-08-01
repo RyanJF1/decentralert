@@ -2,19 +2,14 @@ package com.crypt.decentralert.controller;
 
 import com.crypt.decentralert.request.AddressRequest;
 import com.crypt.decentralert.request.AlchemyApiRequest;
-import com.crypt.decentralert.request.GetAssetTransfersRequest;
 import com.crypt.decentralert.response.AddressResponse;
 import com.crypt.decentralert.response.FetchAddressResponse;
-import com.crypt.decentralert.response.GetAssetTransfersResponse;
 import com.crypt.decentralert.service.AddressService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import net.minidev.json.JSONObject;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 @RestController
@@ -56,9 +51,23 @@ public class AddressController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/address/_getAssetTransfers", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAssetTransfers(@RequestBody AlchemyApiRequest request) {
-        GetAssetTransfersResponse response = addressService.getAssetTransfers(request);
+
+
+    @GetMapping(value = "/address/{address}/_getAssetTransfers", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getAssetTransfers(@PathVariable("address") String address) {
+        Object response = addressService.getAssetTransfers(address);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping(value = "/address/_getTokenMetadata", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getTokenMetadata(@RequestBody AlchemyApiRequest request) {
+        Object response = addressService.getTokenMetadata(request);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping(value = "/address/_getTokenBalances", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getTokenBalances(@RequestBody AlchemyApiRequest request) {
+        Object response = addressService.getTokenBalances(request);
         return ResponseEntity.ok().body(response);
     }
 }

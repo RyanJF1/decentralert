@@ -12,9 +12,6 @@ public class AlchemyApiRequest extends LinkedHashMap<String, Object> implements 
 
     public AlchemyApiRequest(){
         this.put("jsonrpc", "2.0");
-        this.put("id", 0);
-        this.put("method", null);
-        this.put("params", new ArrayList<>());
     }
 
     public void setParams(Object request){
@@ -23,6 +20,10 @@ public class AlchemyApiRequest extends LinkedHashMap<String, Object> implements 
 
     public void setMethod(String method){
         this.put("method", method);
+    }
+
+    public void setId(int id){
+        this.put("id", id);
     }
 
 }
