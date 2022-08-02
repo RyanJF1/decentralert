@@ -1,5 +1,6 @@
 package com.crypt.decentralert.controller;
 
+import com.crypt.decentralert.request.AddAddressRequest;
 import com.crypt.decentralert.request.AddressRequest;
 import com.crypt.decentralert.request.AlchemyApiRequest;
 import com.crypt.decentralert.response.AddressResponse;
@@ -69,5 +70,11 @@ public class AddressController {
     public ResponseEntity<?> getTokenBalances(@RequestBody AlchemyApiRequest request) {
         Object response = addressService.getTokenBalances(request);
         return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping(value = "/address/_add", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> addAddressToUser(@RequestBody AddAddressRequest request){
+        addressService.addAddressToUser(request);
+        return ResponseEntity.ok().build();
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -43,7 +44,7 @@ public class User implements Serializable {
         this.addresses = addresses;
     }
 
-    @ManyToMany
+    @OneToMany
     private List<Address> addresses;
 
     public void setId(Long id) {

@@ -2,8 +2,11 @@ package com.crypt.decentralert.service;
 
 import com.crypt.decentralert.config.Constant;
 import com.crypt.decentralert.entity.Address;
+import com.crypt.decentralert.entity.User;
 import com.crypt.decentralert.mapper.AddressMapper;
 import com.crypt.decentralert.repository.AddressRepository;
+import com.crypt.decentralert.repository.UserRepository;
+import com.crypt.decentralert.request.AddAddressRequest;
 import com.crypt.decentralert.request.AddressRequest;
 import com.crypt.decentralert.request.AlchemyApiRequest;
 import com.crypt.decentralert.request.ParamsRequest;
@@ -11,7 +14,6 @@ import com.crypt.decentralert.response.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -25,6 +27,8 @@ public class AddressService {
 
     @Autowired
     private final AddressRepository addressRepository;
+
+    private final UserRepository userRespository;
     private final AddressMapper addressMapper;
     private final ApiService apiService;
     private final NotificationService notificationService;
@@ -32,8 +36,9 @@ public class AddressService {
     private final JavaMailSender javaMailSender;
     Logger logger = LoggerFactory.getLogger(AddressService.class);
 
-    public AddressService(AddressRepository addressRepository, AddressMapper addressMapper, ApiService apiService, NotificationService notificationService, JavaMailSender javaMailSender) {
+    public AddressService(AddressRepository addressRepository, UserRepository userRespository, AddressMapper addressMapper, ApiService apiService, NotificationService notificationService, JavaMailSender javaMailSender) {
         this.addressRepository = addressRepository;
+        this.userRespository = userRespository;
         this.addressMapper = addressMapper;
         this.apiService = apiService;
         this.notificationService = notificationService;
@@ -131,4 +136,10 @@ public class AddressService {
         return apiService.callAlchemyApi(request, Object.class);
     }
 
+    public void addAddressToUser(AddAddressRequest request){
+        User user = userRespository.findUserByEmail(request.getEmail());
+        Address address = addressRepository.findByAddressId(request.getAddressId());
+        user.getAddresses().add((address));
+        userRespository.save(user);
+    }
 }

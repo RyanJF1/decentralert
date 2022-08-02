@@ -4,6 +4,7 @@ import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -37,17 +38,6 @@ public class Address implements Serializable {
     public void setId(int id) {
         this.id = id;
     }
-
-    public List<User> getUser() {
-        return user;
-    }
-
-    public void setUser(List<User> user) {
-        this.user = user;
-    }
-
-    @ManyToMany
-    private List<User> user;
 
     public String getNickname() {
         return nickname;
