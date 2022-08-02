@@ -4,23 +4,20 @@ import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "address")
 public class Address implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    public Long getId() {
+    public int getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long id;
+    private int id;
 
 
     public String getAddressId() {
@@ -36,6 +33,21 @@ public class Address implements Serializable {
     private String addressId;
     @Column(name = "nickname")
     private String nickname;
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public List<User> getUser() {
+        return user;
+    }
+
+    public void setUser(List<User> user) {
+        this.user = user;
+    }
+
+    @ManyToMany
+    private List<User> user;
 
     public String getNickname() {
         return nickname;

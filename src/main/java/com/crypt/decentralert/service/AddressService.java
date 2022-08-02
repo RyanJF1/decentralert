@@ -8,13 +8,12 @@ import com.crypt.decentralert.request.AddressRequest;
 import com.crypt.decentralert.request.AlchemyApiRequest;
 import com.crypt.decentralert.request.ParamsRequest;
 import com.crypt.decentralert.response.*;
-import com.google.gson.Gson;
-import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -24,30 +23,35 @@ import java.util.stream.Collectors;
 @Service
 public class AddressService {
 
-@Autowired
+    @Autowired
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
     private final ApiService apiService;
+    private final NotificationService notificationService;
+
+    private final JavaMailSender javaMailSender;
     Logger logger = LoggerFactory.getLogger(AddressService.class);
 
-    public AddressService(AddressRepository addressRepository, AddressMapper addressMapper, ApiService apiService) {
+    public AddressService(AddressRepository addressRepository, AddressMapper addressMapper, ApiService apiService, NotificationService notificationService, JavaMailSender javaMailSender) {
         this.addressRepository = addressRepository;
         this.addressMapper = addressMapper;
         this.apiService = apiService;
+        this.notificationService = notificationService;
+        this.javaMailSender = javaMailSender;
     }
 
-    public AddressResponse createAddress(AddressRequest addressRequest){
+    public AddressResponse createAddress(AddressRequest addressRequest) {
         Address address = addressMapper.toAddressEntity(addressRequest);
         addressRepository.save(address);
         return addressMapper.toAddressResponse(address);
     }
 
-    public List<AddressResponse> getAddresses(){
+    public List<AddressResponse> getAddresses() {
         List<Address> addresses = addressRepository.findAll();
         return addressMapper.toAddressResponses(addresses);
     }
 
-    public FetchAddressResponse fetchAddress(String address){
+    public FetchAddressResponse fetchAddress(String address) {
         RestTemplate restTemplate = new RestTemplate();
         FetchAddressResponse fetchAddressResponse = restTemplate.getForObject(Constant.BLOCKCHAIN_API + "/rawaddr/" + address, FetchAddressResponse.class);
         logger.info("Fetched wallet " + address);
@@ -69,7 +73,7 @@ public class AddressService {
         request2.setMethod("alchemy_getAssetTransfers");
         ParamsRequest params2 = new ParamsRequest();
         params2.put("fromAddress", address2);
-        params2.put("category", List.of("external", "internal","erc20", "erc721", "erc1155"));
+        params2.put("category", List.of("external", "internal", "erc20", "erc721", "erc1155"));
         request2.setParams(params2);
         GetAssetTransfersResponse response1 = apiService.callAlchemyApi(request1, GetAssetTransfersResponse.class);
         GetAssetTransfersResponse response2 = apiService.callAlchemyApi(request2, GetAssetTransfersResponse.class);
@@ -89,15 +93,15 @@ public class AddressService {
             });
             return "Match found!" + matchingHashes;
         }
-            return "No match found.";
-        }
+        return "No match found.";
+    }
 
-    public void deleteAddress(String addressId){
+    public void deleteAddress(String addressId) {
         Address address = addressRepository.findByAddressId(addressId);
         addressRepository.delete(address);
     }
 
-    public Object getAssetTransfers(String address){
+    public Object getAssetTransfers(String address) {
         AlchemyApiRequest request = new AlchemyApiRequest();
         request.setId(0);
         request.setMethod("alchemy_getAssetTransfers");
@@ -105,21 +109,25 @@ public class AddressService {
         paramsRequest.put("fromAddress", address);
         paramsRequest.put("category", List.of("external", "internal"));
         request.setParams(paramsRequest);
-        GetAssetTransfersResponse response =  apiService.callAlchemyApi(request, GetAssetTransfersResponse.class);
+        GetAssetTransfersResponse response = apiService.callAlchemyApi(request, GetAssetTransfersResponse.class);
         ArrayList<String> hashes = response.getResult().getTransfers().stream()
                 .map(TransfersResultResponse::getHash)
                 .collect(Collectors.toCollection(ArrayList::new));
-        if(hashes.isEmpty())
+        if (hashes.isEmpty()) {
+            notificationService.sendEmail("ryan.j.fulton@gmail.com", "No transactions found for address " + address, hashes);
             return Collections.singletonList("No transactions found for address " + address);
-        else
+        } else {
+            notificationService.sendEmail("ryan.j.fulton@gmail.com", "No transactions found for address " + address, hashes);
             return hashes;
+        }
+
     }
 
-    public Object getTokenMetadata(AlchemyApiRequest request){
+    public Object getTokenMetadata(AlchemyApiRequest request) {
         return apiService.callAlchemyApi(request, Object.class);
     }
 
-    public Object getTokenBalances(AlchemyApiRequest request){
+    public Object getTokenBalances(AlchemyApiRequest request) {
         return apiService.callAlchemyApi(request, Object.class);
     }
 
