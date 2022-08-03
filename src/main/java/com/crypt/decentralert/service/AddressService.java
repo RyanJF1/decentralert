@@ -31,17 +31,15 @@ public class AddressService {
     private final UserRepository userRespository;
     private final AddressMapper addressMapper;
     private final ApiService apiService;
-    private final NotificationService notificationService;
 
     private final JavaMailSender javaMailSender;
     Logger logger = LoggerFactory.getLogger(AddressService.class);
 
-    public AddressService(AddressRepository addressRepository, UserRepository userRespository, AddressMapper addressMapper, ApiService apiService, NotificationService notificationService, JavaMailSender javaMailSender) {
+    public AddressService(AddressRepository addressRepository, UserRepository userRespository, AddressMapper addressMapper, ApiService apiService, JavaMailSender javaMailSender) {
         this.addressRepository = addressRepository;
         this.userRespository = userRespository;
         this.addressMapper = addressMapper;
         this.apiService = apiService;
-        this.notificationService = notificationService;
         this.javaMailSender = javaMailSender;
     }
 
@@ -106,7 +104,7 @@ public class AddressService {
         addressRepository.delete(address);
     }
 
-    public Object getAssetTransfers(String address) {
+    public List<String> getAssetTransfers(String address) {
         AlchemyApiRequest request = new AlchemyApiRequest();
         request.setId(0);
         request.setMethod("alchemy_getAssetTransfers");
@@ -119,10 +117,8 @@ public class AddressService {
                 .map(TransfersResultResponse::getHash)
                 .collect(Collectors.toCollection(ArrayList::new));
         if (hashes.isEmpty()) {
-            notificationService.sendEmail("ryan.j.fulton@gmail.com", "No transactions found for address " + address, hashes);
             return Collections.singletonList("No transactions found for address " + address);
         } else {
-            notificationService.sendEmail("ryan.j.fulton@gmail.com", "No transactions found for address " + address, hashes);
             return hashes;
         }
 

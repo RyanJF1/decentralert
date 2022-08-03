@@ -18,9 +18,9 @@ public class NotificationController {
         this.addressService = addressService;
     }
 
-    @Scheduled(cron = "0 * * * * ?")
-    @GetMapping("/notify")
-    public void notification(){
-        addressService.getAssetTransfers("0x41eAFde086f9D6C66e163e11E6Ad1A39b3CD7818");
+    @Scheduled(cron = "0 0/5 * * * ?")
+    @GetMapping("/notify/_AssetTransfers")
+    public void notifyAssetTransfers(){
+        notificationService.notifyAssetTransfers();
     }
 }
