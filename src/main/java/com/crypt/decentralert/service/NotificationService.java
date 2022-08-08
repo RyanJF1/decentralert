@@ -46,6 +46,7 @@ public class NotificationService {
         notification.setUser(user);
         notification.setAddress(address);
         notification.setNotify(true);
+        user.getNotifications().add(notification);
         notificationRepository.save(notification);
     }
 

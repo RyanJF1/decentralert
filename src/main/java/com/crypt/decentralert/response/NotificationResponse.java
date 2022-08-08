@@ -25,6 +25,16 @@ public class NotificationResponse implements Serializable {
 
     @JsonProperty("address_id")
     private String addressId;
+    @JsonProperty("nickname")
+    private String nickname;
     @JsonProperty("notify")
     private boolean notify;
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }

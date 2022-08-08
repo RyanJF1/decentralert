@@ -1,5 +1,7 @@
 package com.crypt.decentralert.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
@@ -33,6 +35,8 @@ private User user;
     @OneToOne
 private Address address;
 private boolean notify;
+@JsonProperty("interval_time")
+private String intervalTime;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -51,5 +55,13 @@ private boolean notify;
 
     public void setNotify(boolean notify) {
         this.notify = notify;
+    }
+
+    public String getIntervalTime() {
+        return intervalTime;
+    }
+
+    public void setIntervalTime(String intervalTime) {
+        this.intervalTime = intervalTime;
     }
 }

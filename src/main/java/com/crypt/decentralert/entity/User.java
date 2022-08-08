@@ -55,7 +55,7 @@ public class User implements Serializable {
         this.notifications = notifications;
     }
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Notification> notifications;
 
     public void setId(Long id) {

@@ -12,16 +12,6 @@ public class UserResponse implements Serializable {
 private long id;
     private String email;
 
-    public List<Address> getAddresses() {
-        return addresses;
-    }
-
-    public void setAddresses(List<Address> addresses) {
-        this.addresses = addresses;
-    }
-
-    private List<Address> addresses;
-
     public String getName() {
         return name;
     }

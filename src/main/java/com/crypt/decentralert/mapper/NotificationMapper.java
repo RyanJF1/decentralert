@@ -20,6 +20,7 @@ public class NotificationMapper {
     public List<NotificationResponse> toNotificationResponses(List<Notification> notifications){
         return notifications.stream().map(notification -> {
             NotificationResponse response = new NotificationResponse();
+            response.setNickname(notification.getAddress().getNickname());
             response.setAddressId(notification.getAddress().getAddressId());
             response.setNotify(notification.isNotify());
             return response;
