@@ -44,8 +44,19 @@ public class User implements Serializable {
         this.addresses = addresses;
     }
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Address> addresses;
+
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Notification> notifications;
 
     public void setId(Long id) {
         this.id = id;

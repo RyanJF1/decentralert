@@ -42,7 +42,6 @@ public class UserMapper {
             UserResponse response = new UserResponse();
             response.setName(user.getName());
             response.setEmail(user.getEmail());
-            response.setAddresses(user.getAddresses());
             return response;
         }).collect(Collectors.toList());
     }

@@ -52,23 +52,9 @@ public class AddressController {
         return ResponseEntity.ok().build();
     }
 
-
-
     @GetMapping(value = "/address/{address}/_getAssetTransfers", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAssetTransfers(@PathVariable("address") String address) {
         Object response = addressService.getAssetTransfers(address);
-        return ResponseEntity.ok().body(response);
-    }
-
-    @PostMapping(value = "/address/_getTokenMetadata", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getTokenMetadata(@RequestBody AlchemyApiRequest request) {
-        Object response = addressService.getTokenMetadata(request);
-        return ResponseEntity.ok().body(response);
-    }
-
-    @PostMapping(value = "/address/_getTokenBalances", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getTokenBalances(@RequestBody AlchemyApiRequest request) {
-        Object response = addressService.getTokenBalances(request);
         return ResponseEntity.ok().body(response);
     }
 

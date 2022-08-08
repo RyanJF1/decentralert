@@ -21,26 +21,23 @@ import org.springframework.web.client.RestTemplate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 @Service
 public class AddressService {
 
     @Autowired
     private final AddressRepository addressRepository;
 
-    private final UserRepository userRespository;
+    private final UserRepository userRepository;
     private final AddressMapper addressMapper;
     private final ApiService apiService;
 
-    private final JavaMailSender javaMailSender;
     Logger logger = LoggerFactory.getLogger(AddressService.class);
 
-    public AddressService(AddressRepository addressRepository, UserRepository userRespository, AddressMapper addressMapper, ApiService apiService, JavaMailSender javaMailSender) {
+    public AddressService(AddressRepository addressRepository, UserRepository userRepository, AddressMapper addressMapper, ApiService apiService, JavaMailSender javaMailSender) {
         this.addressRepository = addressRepository;
-        this.userRespository = userRespository;
+        this.userRepository = userRepository;
         this.addressMapper = addressMapper;
         this.apiService = apiService;
-        this.javaMailSender = javaMailSender;
     }
 
     public AddressResponse createAddress(AddressRequest addressRequest) {
@@ -111,6 +108,7 @@ public class AddressService {
         ParamsRequest paramsRequest = new ParamsRequest();
         paramsRequest.put("fromAddress", address);
         paramsRequest.put("category", List.of("external", "internal"));
+        paramsRequest.put("withMetadata", true);
         request.setParams(paramsRequest);
         GetAssetTransfersResponse response = apiService.callAlchemyApi(request, GetAssetTransfersResponse.class);
         ArrayList<String> hashes = response.getResult().getTransfers().stream()
@@ -124,18 +122,10 @@ public class AddressService {
 
     }
 
-    public Object getTokenMetadata(AlchemyApiRequest request) {
-        return apiService.callAlchemyApi(request, Object.class);
-    }
-
-    public Object getTokenBalances(AlchemyApiRequest request) {
-        return apiService.callAlchemyApi(request, Object.class);
-    }
-
     public void addAddressToUser(AddAddressRequest request){
-        User user = userRespository.findUserByEmail(request.getEmail());
+        User user = userRepository.findUserByEmail(request.getEmail());
         Address address = addressRepository.findByAddressId(request.getAddressId());
         user.getAddresses().add((address));
-        userRespository.save(user);
+        userRepository.save(user);
     }
 }

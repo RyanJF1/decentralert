@@ -2,6 +2,7 @@ package com.crypt.decentralert.response;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public class TransfersResultResponse implements Serializable {
     static final long serialVersionUID = 1L;
@@ -12,6 +13,16 @@ public class TransfersResultResponse implements Serializable {
     private String value;
     private String tokenId;
     private String asset;
+
+    public String getMetadata() {
+        return metadata.get("blockTimestamp");
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+    }
+
+    private Map<String, String> metadata;
 
     public String getBlockNum() {
         return blockNum;

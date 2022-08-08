@@ -7,7 +7,6 @@ public class TransfersResponse implements Serializable {
     static final long serialVersionUID = 1L;
 
     private List<TransfersResultResponse> transfers;
-
     public List<TransfersResultResponse> getTransfers() {
         return transfers;
     }
