@@ -101,7 +101,7 @@ public class AddressService {
         addressRepository.delete(address);
     }
 
-    public List<String> getAssetTransfers(String address) {
+    public GetAssetTransfersResponse getAssetTransfers(String address) {
         AlchemyApiRequest request = new AlchemyApiRequest();
         request.setId(0);
         request.setMethod("alchemy_getAssetTransfers");
@@ -111,16 +111,8 @@ public class AddressService {
         paramsRequest.put("withMetadata", true);
         request.setParams(paramsRequest);
         GetAssetTransfersResponse response = apiService.callAlchemyApi(request, GetAssetTransfersResponse.class);
-        if (null == response)
-            return Collections.singletonList("No transactions found for address " + address);
-        ArrayList<String> hashes = response.getResult().getTransfers().stream()
-                .map(TransfersResultResponse::getHash)
-                .collect(Collectors.toCollection(ArrayList::new));
-        if (hashes.isEmpty()) {
-            return Collections.singletonList("No transactions found for address " + address);
-        } else {
-            return hashes;
-        }
+        return Objects.requireNonNullElseGet(response, GetAssetTransfersResponse::new);
+
 
     }
 

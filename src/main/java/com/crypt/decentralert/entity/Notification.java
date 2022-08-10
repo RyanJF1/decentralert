@@ -12,18 +12,6 @@ public class Notification implements Serializable {
 
     static final long serialVersionUID = 1L;
 
-
-    @ManyToOne
-private User user;
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public Address getAddress() {
         return address;
     }
@@ -37,6 +25,17 @@ private Address address;
 private boolean notify;
 @JsonProperty("type")
 private String type;
+
+    public String getLastSent() {
+        return lastSent;
+    }
+
+    public void setLastSent(String lastSent) {
+        this.lastSent = lastSent;
+    }
+
+    @JsonProperty("last_sent")
+private String lastSent;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
