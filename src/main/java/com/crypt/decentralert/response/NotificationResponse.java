@@ -30,6 +30,16 @@ public class NotificationResponse implements Serializable {
     @JsonProperty("notify")
     private boolean notify;
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    private long id;
+
     public String getNickname() {
         return nickname;
     }

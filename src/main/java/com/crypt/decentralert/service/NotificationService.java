@@ -15,7 +15,10 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -39,7 +42,7 @@ public class NotificationService {
         this.notificationMapper = notificationMapper;
     }
 
-    public void createNotification(CreateNotificationRequest request){
+    public void createNotification(CreateNotificationRequest request) {
         User user = userRepository.findUserByEmail(request.getEmail());
         Address address = addressRepository.findByAddressId(request.getAddressId());
         Notification notification = new Notification();
@@ -51,26 +54,35 @@ public class NotificationService {
     }
 
 
-    public List<NotificationResponse> getNotifications(String email){
+    public List<NotificationResponse> getNotifications(String email) {
         User user = userRepository.findUserByEmail(email);
         List<Notification> notifications = user.getNotifications();
+        if(notifications.isEmpty())
+            return Collections.emptyList();
         return notificationMapper.toNotificationResponses(notifications);
-}
+    }
+
+    public void deleteNotification(long notificationId){
+        notificationRepository.deleteById(notificationId);
+    }
 
 
     public void notifyAssetTransfers() {
         List<User> users = userRepository.findAll();
-
-        users.forEach(user ->{
-            user.getAddresses().forEach(address -> {
-                List<String> hashes = addressService.getAssetTransfers(address.getAddressId());
-                String result = String.join("\n", hashes);
+        users.forEach(user -> {
+            SimpleMailMessage[] messages =
+            user.getNotifications().stream().map(notification -> {
+                String addressId = notification.getAddress().getAddressId();
+                List<String> hashes = addressService.getAssetTransfers(addressId);
+                String result = String.join("\n\n", hashes);
                 SimpleMailMessage message = new SimpleMailMessage();
                 message.setTo(user.getEmail());
-                message.setSubject("Get Asset Transfers");
-                message.setText("Get Asset Transfers for address " + address.getAddressId() + ": \n" + result);
-                javaMailSender.send(message);
-            });
+                message.setSubject("Get Asset Transfers for address " + notification.getAddress().getNickname() + " [" + addressId + "]");
+                message.setText("Get Asset Transfers for address " + addressId + ": \n\n" + result);
+                return message;
+            }).toArray(SimpleMailMessage[]::new);
+            logger.info("Sending email to " + user.getEmail() + "...");
+            javaMailSender.send(messages);
         });
 
     }

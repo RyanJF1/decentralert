@@ -21,6 +21,7 @@ public class NotificationMapper {
         return notifications.stream().map(notification -> {
             NotificationResponse response = new NotificationResponse();
             response.setNickname(notification.getAddress().getNickname());
+            response.setId(notification.getId());
             response.setAddressId(notification.getAddress().getAddressId());
             response.setNotify(notification.isNotify());
             return response;

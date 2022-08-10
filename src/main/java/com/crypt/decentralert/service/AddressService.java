@@ -111,6 +111,8 @@ public class AddressService {
         paramsRequest.put("withMetadata", true);
         request.setParams(paramsRequest);
         GetAssetTransfersResponse response = apiService.callAlchemyApi(request, GetAssetTransfersResponse.class);
+        if (null == response)
+            return Collections.singletonList("No transactions found for address " + address);
         ArrayList<String> hashes = response.getResult().getTransfers().stream()
                 .map(TransfersResultResponse::getHash)
                 .collect(Collectors.toCollection(ArrayList::new));

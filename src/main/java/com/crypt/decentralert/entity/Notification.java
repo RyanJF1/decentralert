@@ -13,7 +13,7 @@ public class Notification implements Serializable {
     static final long serialVersionUID = 1L;
 
 
-    @OneToOne
+    @ManyToOne
 private User user;
 
     public User getUser() {
@@ -35,8 +35,8 @@ private User user;
     @OneToOne
 private Address address;
 private boolean notify;
-@JsonProperty("interval_time")
-private String intervalTime;
+@JsonProperty("type")
+private String type;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -57,11 +57,11 @@ private String intervalTime;
         this.notify = notify;
     }
 
-    public String getIntervalTime() {
-        return intervalTime;
+    public String getType() {
+        return type;
     }
 
-    public void setIntervalTime(String intervalTime) {
-        this.intervalTime = intervalTime;
+    public void setType(String type) {
+        this.type = type;
     }
 }

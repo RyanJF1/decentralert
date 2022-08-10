@@ -9,10 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -37,9 +34,15 @@ public class NotificationController {
         return ResponseEntity.ok().body(responseList);
     }
 
-//    @Scheduled(cron = "* * * * * ?")
-//    @GetMapping("/notifications/notify/_AssetTransfers")
-//    public void notifyAssetTransfers(){
-//        notificationService.notifyAssetTransfers();
-//    }
+    @DeleteMapping("/notifications")
+    public ResponseEntity<?> deleteNotification(@Param("notificationId") long notificationId){
+        notificationService.deleteNotification(notificationId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Scheduled(cron = "*/60 * * * * *")
+    @GetMapping("/notifications/notify/_AssetTransfers")
+    public void notifyAssetTransfers(){
+        notificationService.notifyAssetTransfers();
+    }
 }
