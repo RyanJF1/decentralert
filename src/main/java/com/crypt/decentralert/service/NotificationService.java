@@ -58,9 +58,7 @@ public class NotificationService {
             user.getNotifications().add(notification);
             notificationRepository.save(notification);
         }
-
     }
-
 
     public List<NotificationResponse> getNotifications(String email) {
         User user = userRepository.findUserByEmail(email);
