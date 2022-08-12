@@ -50,12 +50,15 @@ public class NotificationService {
     public void createNotification(CreateNotificationRequest request) {
         User user = userRepository.findUserByEmail(request.getEmail());
         Address address = addressRepository.findByAddressId(request.getAddressId());
-        Notification notification = new Notification();
-        notification.setAddress(address);
-        notification.setNotify(true);
-        notification.setLastSent(Instant.now().toString());
-        user.getNotifications().add(notification);
-        notificationRepository.save(notification);
+        if (null != address) {
+            Notification notification = new Notification();
+            notification.setAddress(address);
+            notification.setNotify(true);
+            notification.setLastSent(Instant.now().toString());
+            user.getNotifications().add(notification);
+            notificationRepository.save(notification);
+        }
+
     }
 
 
