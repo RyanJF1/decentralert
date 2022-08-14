@@ -58,6 +58,12 @@ public class AddressController {
         return ResponseEntity.ok().body(response);
     }
 
+    @GetMapping(value = "/address/transfers", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getAssetTransfersUI(@Param("address") String address) {
+        Object response = addressService.getAssetTransfersUI(address);
+        return ResponseEntity.ok().body(response);
+    }
+
     @PostMapping(value = "/address/_add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addAddressToUser(@RequestBody AddAddressRequest request){
         addressService.addAddressToUser(request);

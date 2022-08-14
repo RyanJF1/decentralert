@@ -115,6 +115,23 @@ public class AddressService {
 
 
     }
+    public List<GetAssetTransfersUIResponse> getAssetTransfersUI(String address) {
+        AlchemyApiRequest request = new AlchemyApiRequest();
+        request.setId(0);
+        request.setMethod("alchemy_getAssetTransfers");
+        ParamsRequest paramsRequest = new ParamsRequest();
+        paramsRequest.put("fromAddress", address);
+        paramsRequest.put("category", List.of("external", "internal"));
+        paramsRequest.put("withMetadata", true);
+        request.setParams(paramsRequest);
+        GetAssetTransfersResponse response = apiService.callAlchemyApi(request, GetAssetTransfersResponse.class);
+        if (null == response)
+            return new ArrayList<>();
+        return addressMapper.toGetAssetTransfersUIResponse(response);
+
+
+    }
+
 
     public void addAddressToUser(AddAddressRequest request){
         User user = userRepository.findUserByEmail(request.getEmail());

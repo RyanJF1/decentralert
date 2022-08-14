@@ -5,6 +5,9 @@ import com.crypt.decentralert.request.AddressRequest;
 import com.crypt.decentralert.request.GetAssetTransfersRequest;
 import com.crypt.decentralert.request.ParamsRequest;
 import com.crypt.decentralert.response.AddressResponse;
+import com.crypt.decentralert.response.GetAssetTransfersResponse;
+import com.crypt.decentralert.response.GetAssetTransfersUIResponse;
+import com.crypt.decentralert.response.TransfersResultResponse;
 import net.minidev.json.JSONObject;
 import org.springframework.context.annotation.Bean;
 
@@ -55,6 +58,23 @@ public class AddressMapper {
         address.setAddressId(addressRequest.getAddressId());
         address.setNickname(addressRequest.getNickname());
         return address;
+    }
+
+    public List<GetAssetTransfersUIResponse> toGetAssetTransfersUIResponse(GetAssetTransfersResponse response){
+        List<GetAssetTransfersUIResponse> transfersResultResponses = new ArrayList<>();
+        transfersResultResponses = response.getResult().getTransfers().stream().map(transfer -> {
+            GetAssetTransfersUIResponse result = new GetAssetTransfersUIResponse();
+            result.setAsset(transfer.getAsset());
+            result.setBlockNum(transfer.getBlockNum());
+            result.setHash(transfer.getHash());
+            result.setFrom(transfer.getFrom());
+            result.setTo(transfer.getTo());
+            result.setValue(transfer.getValue());
+            result.setTime(transfer.getMetadata());
+            return result;
+        }).collect(Collectors.toList());
+        Collections.reverse(transfersResultResponses);
+        return transfersResultResponses;
     }
 
 }
