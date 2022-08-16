@@ -40,7 +40,7 @@ public class NotificationController {
         return ResponseEntity.ok().build();
     }
 
-    @Scheduled(cron = "*/90 * * * * *")
+    @Scheduled(cron = "0 0/15 * * * ?")
     @GetMapping("/notifications/notify/_AssetTransfers")
     public void notifyAssetTransfers(){
         notificationService.notifyAssetTransfers();

@@ -111,6 +111,8 @@ public class AddressService {
         paramsRequest.put("withMetadata", true);
         request.setParams(paramsRequest);
         GetAssetTransfersResponse response = apiService.callAlchemyApi(request, GetAssetTransfersResponse.class);
+        if (null == response)
+            return new GetAssetTransfersResponse();
         return Objects.requireNonNullElseGet(response, GetAssetTransfersResponse::new);
 
 
