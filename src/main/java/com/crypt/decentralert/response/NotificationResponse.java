@@ -40,6 +40,16 @@ public class NotificationResponse implements Serializable {
 
     private long id;
 
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
+
+    private String guid;
+
     public String getNickname() {
         return nickname;
     }

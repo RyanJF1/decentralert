@@ -7,4 +7,5 @@ import org.springframework.data.repository.query.Param;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
+    Notification findByGuid(String guid);
 }

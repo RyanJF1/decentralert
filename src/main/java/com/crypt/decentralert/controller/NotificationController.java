@@ -34,13 +34,18 @@ public class NotificationController {
         return ResponseEntity.ok().body(responseList);
     }
 
-    @DeleteMapping("/notifications")
-    public ResponseEntity<?> deleteNotification(@Param("notificationId") long notificationId){
-        notificationService.deleteNotification(notificationId);
+    @DeleteMapping("/notifications/{guid}")
+    public ResponseEntity<?> deleteNotification(@PathVariable("guid") String guid){
+        notificationService.deleteNotification(guid);
         return ResponseEntity.ok().build();
     }
 
-    @Scheduled(cron = "0 0/15 * * * ?")
+//    @PutMapping("/notifications/{id}/_disable")
+//    public ResponseEntity<?> disableNotification(@PathVariable("id") String id){
+//
+//    }
+
+    @Scheduled(cron = "0 0/5 * * * ?")
     @GetMapping("/notifications/notify/_AssetTransfers")
     public void notifyAssetTransfers(){
         notificationService.notifyAssetTransfers();

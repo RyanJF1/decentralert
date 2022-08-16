@@ -22,9 +22,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -57,6 +55,7 @@ public class NotificationService {
             notification.setAddress(address);
             notification.setNotify(true);
             notification.setLastSent(Instant.now().toString());
+            notification.setGuid(UUID.randomUUID().toString());
             user.getNotifications().add(notification);
             notificationRepository.save(notification);
         }
@@ -70,10 +69,16 @@ public class NotificationService {
         return notificationMapper.toNotificationResponses(notifications);
     }
 
-    public void deleteNotification(long notificationId) {
-        notificationRepository.deleteById(notificationId);
+    public void deleteNotification(String guid) {
+        Notification notification = notificationRepository.findByGuid(guid);
+        notificationRepository.delete(notification);
     }
 
+    public void disableNotification(String guid){
+        Notification notification = notificationRepository.findByGuid(guid);
+        notification.setNotify(!notification.isNotify());
+        notificationRepository.save(notification);
+    }
 
     public void notifyAssetTransfers() {
         List<User> users = userRepository.findAll();
@@ -82,8 +87,10 @@ public class NotificationService {
             SimpleMailMessage[] messages =
                     user.getNotifications().stream().map(notification -> {
                         String addressId = notification.getAddress().getAddressId();
+
                         GetAssetTransfersResponse response = addressService.getAssetTransfers(addressId);
                         logger.info("Getting transfers for address " + addressId);
+
                         response.getResult().getTransfers().forEach(transfer -> {
                             String time = transfer.getMetadata();
                             Instant instant = Instant.parse(time);
@@ -93,14 +100,12 @@ public class NotificationService {
                                 hashes.add(transfer.getHash() + " Time: " + instant);
                             }
                         });
+
                         String result = String.join("\n\n", hashes);
-                        SimpleMailMessage message = new SimpleMailMessage();
-                        message.setTo(user.getEmail());
-                        message.setSubject("Get Asset Transfers for address " + notification.getAddress().getNickname() + " [" + addressId + "]");
-                        message.setText("Get Asset Transfers for address " + addressId + ": \n\n" + result);
                         if(!hashes.isEmpty())
                             notification.setLastSent(Instant.now().toString());
-                        return message;
+
+                        return buildMessage(user, notification, result);
                     }).toArray(SimpleMailMessage[]::new);
             notificationRepository.saveAll(user.getNotifications());
             if(!hashes.isEmpty()){
@@ -110,5 +115,13 @@ public class NotificationService {
         });
     }
 
+    private SimpleMailMessage buildMessage(User user, Notification notification, String body){
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(user.getEmail());
+        message.setSubject("Get Asset Transfers for address: " + notification.getAddress().getNickname() + " [" + notification.getAddress().getAddressId() + "]");
+        message.setText(body);
+
+        return message;
+    }
 
 }

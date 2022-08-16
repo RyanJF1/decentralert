@@ -26,6 +26,16 @@ private boolean notify;
 @JsonProperty("type")
 private String type;
 
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
+
+    private String guid;
+
     public String getLastSent() {
         return lastSent;
     }
