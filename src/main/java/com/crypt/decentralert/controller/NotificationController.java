@@ -40,10 +40,11 @@ public class NotificationController {
         return ResponseEntity.ok().build();
     }
 
-//    @PutMapping("/notifications/{id}/_disable")
-//    public ResponseEntity<?> disableNotification(@PathVariable("id") String id){
-//
-//    }
+    @PutMapping("/notifications/{guid}/_disable")
+    public ResponseEntity<?> disableNotification(@PathVariable("guid") String guid){
+        List<NotificationResponse> response = notificationService.disableNotification(guid);
+        return ResponseEntity.ok().body(response);
+    }
 
     @Scheduled(cron = "0 0/5 * * * ?")
     @GetMapping("/notifications/notify/_AssetTransfers")

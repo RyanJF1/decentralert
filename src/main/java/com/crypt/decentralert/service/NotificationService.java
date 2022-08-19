@@ -69,10 +69,11 @@ public class NotificationService {
         notificationRepository.delete(notification);
     }
 
-    public void disableNotification(String guid) {
+    public List<NotificationResponse> disableNotification(String guid) {
         Notification notification = notificationRepository.findByGuid(guid);
         notification.setNotify(!notification.isNotify());
         notificationRepository.save(notification);
+        return notificationMapper.toNotificationResponses(Collections.singletonList(notification));
     }
 
     public void notifyAssetTransfers() {
