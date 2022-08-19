@@ -80,7 +80,8 @@ public class NotificationService {
         List<User> users = userRepository.findAll();
         List<String> hashes = new ArrayList<>();
         users.forEach(user -> {
-            user.getNotifications().forEach(notification -> {
+            user.getNotifications().stream()
+                    .filter(Notification::isNotify).forEach(notification -> {
                 String addressId = notification.getAddress().getAddressId();
                 AtomicBoolean found = new AtomicBoolean(false);
                 GetAssetTransfersResponse response = addressService.getAssetTransfers(addressId);
