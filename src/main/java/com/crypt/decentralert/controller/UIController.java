@@ -16,7 +16,7 @@ public class UIController {
     }
 
     @GetMapping("/ui/dashboard")
-    public ResponseEntity<?> getNotifications(){
+    public ResponseEntity<?> getDashboard(){
 
         return ResponseEntity.ok().body(uiService.getDashboard());
     }

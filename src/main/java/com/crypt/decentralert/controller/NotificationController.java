@@ -1,6 +1,7 @@
 package com.crypt.decentralert.controller;
 
 import com.crypt.decentralert.request.CreateNotificationRequest;
+import com.crypt.decentralert.response.HistoryResponse;
 import com.crypt.decentralert.response.NotificationResponse;
 import com.crypt.decentralert.service.AddressService;
 import com.crypt.decentralert.service.NotificationService;
@@ -50,5 +51,11 @@ public class NotificationController {
     @GetMapping("/notifications/notify/_AssetTransfers")
     public void notifyAssetTransfers(){
         notificationService.notifyAssetTransfers();
+    }
+
+    @GetMapping("/notifications/history")
+    public ResponseEntity<?> getAllHistory(@Param("email") String email){
+        List<HistoryResponse> responseList = notificationService.getAllHistory(email);
+        return ResponseEntity.ok().body(responseList);
     }
 }

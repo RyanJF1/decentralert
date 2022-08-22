@@ -2,13 +2,16 @@ package com.crypt.decentralert.service;
 
 import com.crypt.decentralert.entity.Address;
 import com.crypt.decentralert.entity.Notification;
+import com.crypt.decentralert.entity.History;
 import com.crypt.decentralert.entity.User;
 import com.crypt.decentralert.mapper.NotificationMapper;
 import com.crypt.decentralert.repository.AddressRepository;
+import com.crypt.decentralert.repository.HistoryRepository;
 import com.crypt.decentralert.repository.NotificationRepository;
 import com.crypt.decentralert.repository.UserRepository;
 import com.crypt.decentralert.request.CreateNotificationRequest;
 import com.crypt.decentralert.response.GetAssetTransfersResponse;
+import com.crypt.decentralert.response.HistoryResponse;
 import com.crypt.decentralert.response.NotificationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -28,17 +32,19 @@ public class NotificationService {
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final NotificationRepository notificationRepository;
+    private final HistoryRepository historyRepository;
 
     private final NotificationMapper notificationMapper;
 
     Logger logger = LoggerFactory.getLogger(AddressService.class);
 
-    public NotificationService(JavaMailSender javaMailSender, AddressService addressService, UserRepository userRepository, AddressRepository addressRepository, NotificationRepository notificationRepository, NotificationMapper notificationMapper) {
+    public NotificationService(JavaMailSender javaMailSender, AddressService addressService, UserRepository userRepository, AddressRepository addressRepository, NotificationRepository notificationRepository, HistoryRepository historyRepository, NotificationMapper notificationMapper) {
         this.javaMailSender = javaMailSender;
         this.addressService = addressService;
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
         this.notificationRepository = notificationRepository;
+        this.historyRepository = historyRepository;
         this.notificationMapper = notificationMapper;
     }
 
@@ -64,6 +70,26 @@ public class NotificationService {
         return notificationMapper.toNotificationResponses(notifications);
     }
 
+    public List<HistoryResponse> getHistory(String guid) {
+        Notification notification = notificationRepository.findByGuid(guid);
+        List<History> history = notification.getHistory();
+        if (history.isEmpty())
+            return Collections.emptyList();
+        return notificationMapper.toHistoryResponses(history);
+    }
+
+    public List<HistoryResponse> getAllHistory(String email) {
+        User user = userRepository.findUserByEmail(email);
+
+        List<History> history = new ArrayList<>();
+        user.getNotifications().forEach(notification -> {
+            history.addAll(notification.getHistory());
+        });
+        if (history.isEmpty())
+            return Collections.emptyList();
+        return notificationMapper.toHistoryResponses(history);
+    }
+
     public void deleteNotification(String guid) {
         Notification notification = notificationRepository.findByGuid(guid);
         notificationRepository.delete(notification);
@@ -82,30 +108,31 @@ public class NotificationService {
         users.forEach(user -> {
             user.getNotifications().stream()
                     .filter(Notification::isNotify).forEach(notification -> {
-                String addressId = notification.getAddress().getAddressId();
-                AtomicBoolean found = new AtomicBoolean(false);
-                GetAssetTransfersResponse response = addressService.getAssetTransfers(addressId);
-                logger.info("Getting transfers for address " + addressId);
+                        String addressId = notification.getAddress().getAddressId();
+                        AtomicBoolean found = new AtomicBoolean(false);
+                        GetAssetTransfersResponse response = addressService.getAssetTransfers(addressId);
+                        logger.info("Getting transfers for address " + addressId);
 
-                if (null != response) {
-                    response.getResult().getTransfers().forEach(transfer -> {
-                        Instant instant = Instant.parse(transfer.getMetadata());
-                        Instant lastSent = Instant.parse(notification.getLastSent());
-                        if (instant.isAfter(lastSent)) {
-                            logger.info("Transaction found!");
-                            found.set(true);
-                            hashes.add(transfer.getHash() + " Time: " + instant);
+                        if (null != response && null != response.getResult().getTransfers()) {
+                            response.getResult().getTransfers().forEach(transfer -> {
+                                Instant instant = Instant.parse(transfer.getMetadata());
+                                Instant lastSent = Instant.parse(notification.getLastSent());
+                                if (instant.isAfter(lastSent)) {
+                                    logger.info("Transaction found!");
+                                    found.set(true);
+                                    hashes.add(transfer.getHash() + " Time: " + instant);
+                                }
+                            });
+                        }
+                        String result = String.join("\n\n", hashes);
+                        if (found.get()) {
+                            SimpleMailMessage message = buildMessage(user, notification, result);
+                            javaMailSender.send(message);
+                            logger.info("Sent email to " + user.getEmail());
+                            notification.setLastSent(Instant.now().toString());
+                            setHistory(notification, notification.getLastSent());
                         }
                     });
-                }
-                String result = String.join("\n\n", hashes);
-                if (found.get()) {
-                    SimpleMailMessage message = buildMessage(user, notification, result);
-                    javaMailSender.send(message);
-                    logger.info("Sent email to " + user.getEmail());
-                    notification.setLastSent(Instant.now().toString());
-                }
-            });
             notificationRepository.saveAll(user.getNotifications());
         });
     }
@@ -117,6 +144,15 @@ public class NotificationService {
         message.setText(body);
 
         return message;
+    }
+
+    private void setHistory(Notification notification, String lastSent) {
+        History history = new History();
+        history.setGuid(UUID.randomUUID().toString());
+        history.setLastSent(lastSent);
+        history.setNotification(notification);
+        notification.getHistory().add(history);
+        historyRepository.save(history);
     }
 
 }

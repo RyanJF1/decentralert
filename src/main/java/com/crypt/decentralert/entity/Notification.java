@@ -1,6 +1,7 @@
 package com.crypt.decentralert.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -33,7 +34,7 @@ private String type;
     public void setGuid(String guid) {
         this.guid = guid;
     }
-
+@NaturalId
     private String guid;
 
     public String getLastSent() {
@@ -73,4 +74,16 @@ private String lastSent;
     public void setType(String type) {
         this.type = type;
     }
+
+    public List<History> getHistory() {
+        return history;
+    }
+
+    public void setHistory(List<History> history) {
+        this.history = history;
+    }
+
+    @OneToMany(fetch = FetchType.EAGER)
+
+    private List<History> history;
 }
