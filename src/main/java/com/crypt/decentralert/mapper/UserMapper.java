@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class UserMapper {
@@ -23,6 +24,7 @@ public class UserMapper {
 
     public User toUserEntity(UserRequest userRequest){
         User user = new User();
+        user.setGuid(UUID.randomUUID().toString());
         user.setName(userRequest.getName());
         user.setEmail(userRequest.getEmail());
         return user;

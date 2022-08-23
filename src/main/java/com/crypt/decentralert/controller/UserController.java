@@ -2,6 +2,7 @@ package com.crypt.decentralert.controller;
 
 import com.crypt.decentralert.request.AddressRequest;
 import com.crypt.decentralert.request.AlchemyApiRequest;
+import com.crypt.decentralert.request.LoginRequest;
 import com.crypt.decentralert.request.UserRequest;
 import com.crypt.decentralert.response.AddressResponse;
 import com.crypt.decentralert.response.FetchAddressResponse;
@@ -44,6 +45,12 @@ public class UserController {
     @PutMapping(value = "/user")
     public ResponseEntity<?> updateUser(@RequestBody UserRequest userRequest) {
         UserResponse response = userService.updateUser(userRequest);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest){
+        String response = userService.loginUser(loginRequest);
         return ResponseEntity.ok().body(response);
     }
 }

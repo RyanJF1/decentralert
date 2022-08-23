@@ -35,6 +35,17 @@ public class User implements Serializable {
     }
 
     private String email;
+    private String password;
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
+
+    private String guid;
 
     public List<Address> getAddresses() {
         return addresses;
@@ -64,5 +75,13 @@ public class User implements Serializable {
 
     public Long getId() {
         return id;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

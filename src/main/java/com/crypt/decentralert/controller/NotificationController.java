@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
@@ -30,8 +31,9 @@ public class NotificationController {
     }
 
     @GetMapping("/notifications")
-    public ResponseEntity<?> getNotifications(@Param("email") String email){
-        List<NotificationResponse> responseList = notificationService.getNotifications(email);
+    public ResponseEntity<?> getNotifications(HttpServletRequest httpServletRequest){
+        String guid = httpServletRequest.getHeader("x-user-token");
+        List<NotificationResponse> responseList = notificationService.getNotifications(guid);
         return ResponseEntity.ok().body(responseList);
     }
 

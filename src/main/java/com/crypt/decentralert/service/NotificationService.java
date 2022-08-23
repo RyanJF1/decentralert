@@ -62,8 +62,8 @@ public class NotificationService {
         }
     }
 
-    public List<NotificationResponse> getNotifications(String email) {
-        User user = userRepository.findUserByEmail(email);
+    public List<NotificationResponse> getNotifications(String guid) {
+        User user = userRepository.findUserByGuid(guid);
         List<Notification> notifications = user.getNotifications();
         if (notifications.isEmpty())
             return Collections.emptyList();

@@ -8,4 +8,6 @@ import org.springframework.data.repository.query.Param;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     User findUserByEmail(String email);
+    User findUserByGuid(String guid);
+
 }

@@ -107,7 +107,7 @@ public class AddressService {
         request.setMethod("alchemy_getAssetTransfers");
         ParamsRequest paramsRequest = new ParamsRequest();
         paramsRequest.put("fromAddress", address);
-        paramsRequest.put("category", List.of("external", "internal"));
+        paramsRequest.put("category", List.of("external", "internal", "erc20", "erc721", "specialnft", "erc1155"));
         paramsRequest.put("withMetadata", true);
         request.setParams(paramsRequest);
         GetAssetTransfersResponse response = apiService.callAlchemyApi(request, GetAssetTransfersResponse.class);
@@ -121,7 +121,7 @@ public class AddressService {
         request.setMethod("alchemy_getAssetTransfers");
         ParamsRequest paramsRequest = new ParamsRequest();
         paramsRequest.put("fromAddress", address);
-        paramsRequest.put("category", List.of("external", "internal"));
+        paramsRequest.put("category", List.of("external", "internal", "erc20", "erc721", "specialnft", "erc1155"));
         paramsRequest.put("withMetadata", true);
         request.setParams(paramsRequest);
         GetAssetTransfersResponse response = apiService.callAlchemyApi(request, GetAssetTransfersResponse.class);
