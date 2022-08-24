@@ -15,14 +15,6 @@ public class HistoryResponse implements Serializable {
         this.addressId = addressId;
     }
 
-    public String getGuid() {
-        return guid;
-    }
-
-    public void setGuid(String guid) {
-        this.guid = guid;
-    }
-
     public String getLastSent() {
         return lastSent;
     }
@@ -32,7 +24,6 @@ public class HistoryResponse implements Serializable {
     }
 
     private String addressId;
-    private String guid;
     private String lastSent;
 
 

@@ -13,6 +13,19 @@ public class Notification implements Serializable {
 
     static final long serialVersionUID = 1L;
 
+    @JsonProperty("last_sent")
+    private String lastSent;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    @OneToOne
+    private Address address;
+    private boolean notify;
+    @JsonProperty("type")
+    private String type;
+    @NaturalId
+    private String guid;
+
     public Address getAddress() {
         return address;
     }
@@ -21,12 +34,6 @@ public class Notification implements Serializable {
         this.address = address;
     }
 
-    @OneToOne
-private Address address;
-private boolean notify;
-@JsonProperty("type")
-private String type;
-
     public String getGuid() {
         return guid;
     }
@@ -34,8 +41,7 @@ private String type;
     public void setGuid(String guid) {
         this.guid = guid;
     }
-@NaturalId
-    private String guid;
+
 
     public String getLastSent() {
         return lastSent;
@@ -45,11 +51,6 @@ private String type;
         this.lastSent = lastSent;
     }
 
-    @JsonProperty("last_sent")
-private String lastSent;
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
 
     public void setId(Long id) {
         this.id = id;

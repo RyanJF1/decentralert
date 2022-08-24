@@ -15,48 +15,19 @@ public class User implements Serializable {
 
     private String name;
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     private String email;
     private String password;
 
-    public String getGuid() {
-        return guid;
-    }
-
-    public void setGuid(String guid) {
-        this.guid = guid;
-    }
-
     private String guid;
-
-    public List<Address> getAddresses() {
-        return addresses;
-    }
-
-    public void setAddresses(List<Address> addresses) {
-        this.addresses = addresses;
-    }
 
     @OneToMany(fetch = FetchType.LAZY)
     private List<Address> addresses;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<Notification> notifications;
 
     public List<Notification> getNotifications() {
         return notifications;
@@ -66,8 +37,21 @@ public class User implements Serializable {
         this.notifications = notifications;
     }
 
-    @OneToMany(fetch = FetchType.EAGER)
-    private List<Notification> notifications;
+    public List<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
+    }
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -83,5 +67,21 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

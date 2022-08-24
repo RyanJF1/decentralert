@@ -24,7 +24,7 @@ public class AddressMapper {
 
     public AddressResponse toAddressResponse(Address address) {
         AddressResponse response = new AddressResponse();
-        response.setId(address.getId());
+        response.setGuid(address.getGuid());
         response.setAddressId(address.getAddressId());
         response.setNickname(address.getNickname());
         return response;
@@ -33,7 +33,7 @@ public class AddressMapper {
         List<AddressResponse> addressResponses = new ArrayList<>();
         addressResponses = addresses.stream().map(address -> {
             AddressResponse response = new AddressResponse();
-            response.setId(address.getId());
+            response.setGuid(address.getGuid());
             response.setAddressId(address.getAddressId());
             response.setNickname(address.getNickname());
             return response;
@@ -57,6 +57,7 @@ public class AddressMapper {
         Address address = new Address();
         address.setAddressId(addressRequest.getAddressId());
         address.setNickname(addressRequest.getNickname());
+        address.setGuid(UUID.randomUUID().toString());
         return address;
     }
 

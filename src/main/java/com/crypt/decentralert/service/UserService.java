@@ -36,13 +36,13 @@ public class UserService {
         return userMapper.toUserResponses(users);
     }
 
-    public void deleteUser(String email){
-        User user = userRepository.findUserByEmail(email);
+    public void deleteUser(String guid){
+        User user = userRepository.findUserByGuid(guid);
         userRepository.delete(user);
     }
 
     public UserResponse updateUser(UserRequest request){
-        User user = userRepository.findUserByEmail(request.getEmail());
+        User user = userRepository.findUserByGuid(request.getEmail());
         user.setName(request.getName());
         userRepository.save(user);
         return userMapper.toUserResponse(user);

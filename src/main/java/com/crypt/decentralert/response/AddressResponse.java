@@ -6,15 +6,16 @@ import java.io.Serializable;
 
 public class AddressResponse implements Serializable {
     static final long serialVersionUID = 1L;
-    public int getId() {
-        return id;
+
+    public String getGuid() {
+        return guid;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setGuid(String guid) {
+        this.guid = guid;
     }
 
-    private int id;
+    private String guid;
 
     public String getNickname() {
         return nickname;

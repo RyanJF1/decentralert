@@ -11,6 +11,7 @@ public class UserRequest implements Serializable {
     private String name;
 @JsonProperty("email")
     private String email;
+    private String password;
 
     public String getPassword() {
         return password;
@@ -20,7 +21,7 @@ public class UserRequest implements Serializable {
         this.password = password;
     }
 
-    private String password;
+
 
     public String getName() {
         return name;

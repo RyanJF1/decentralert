@@ -23,14 +23,6 @@ public class History implements Serializable {
     @ManyToOne
     private
     Notification notification;
-    public String getGuid() {
-        return guid;
-    }
-
-    public void setGuid(String guid) {
-        this.guid = guid;
-    }
-    private String guid;
 
     public String getLastSent() {
         return lastSent;

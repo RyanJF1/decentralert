@@ -33,7 +33,6 @@ public class NotificationMapper {
     public List<HistoryResponse> toHistoryResponses(List<History> histories){
         return histories.stream().map(history -> {
             HistoryResponse response = new HistoryResponse();
-            response.setGuid(history.getGuid());
             response.setAddressId(history.getNotification().getAddress().getAddressId());
             response.setLastSent(history.getLastSent());
             return response;

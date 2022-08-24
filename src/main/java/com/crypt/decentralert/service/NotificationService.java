@@ -148,7 +148,6 @@ public class NotificationService {
 
     private void setHistory(Notification notification, String lastSent) {
         History history = new History();
-        history.setGuid(UUID.randomUUID().toString());
         history.setLastSent(lastSent);
         history.setNotification(notification);
         notification.getHistory().add(history);

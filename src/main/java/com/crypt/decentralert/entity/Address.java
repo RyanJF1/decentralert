@@ -20,7 +20,24 @@ public class Address implements Serializable {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private int id;
 
+    @Column(name = "address_id", unique=true)
+    private String addressId;
+    @Column(name = "nickname")
+    private String nickname;
 
+
+    @NaturalId
+    @Column(name="guid")
+    private String guid;
+
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
     public String getAddressId() {
         return addressId;
     }
@@ -29,11 +46,6 @@ public class Address implements Serializable {
         this.addressId = addressId;
     }
 
-    @NaturalId
-    @Column(name = "address_id", unique=true)
-    private String addressId;
-    @Column(name = "nickname")
-    private String nickname;
 
     public void setId(int id) {
         this.id = id;
