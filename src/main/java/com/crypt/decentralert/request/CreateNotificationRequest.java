@@ -15,16 +15,6 @@ public class CreateNotificationRequest implements Serializable {
         this.addressId = addressId;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     @JsonProperty("address_id")
     private String addressId;
-    @JsonProperty("email")
-    private String email;
 }

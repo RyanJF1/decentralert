@@ -13,6 +13,7 @@ import com.crypt.decentralert.request.CreateNotificationRequest;
 import com.crypt.decentralert.response.GetAssetTransfersResponse;
 import com.crypt.decentralert.response.HistoryResponse;
 import com.crypt.decentralert.response.NotificationResponse;
+import com.crypt.decentralert.response.TransfersResultResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;
@@ -48,8 +49,8 @@ public class NotificationService {
         this.notificationMapper = notificationMapper;
     }
 
-    public void createNotification(CreateNotificationRequest request) {
-        User user = userRepository.findUserByEmail(request.getEmail());
+    public void createNotification(String guid, CreateNotificationRequest request) {
+        User user = userRepository.findUserByGuid(guid);
         Address address = addressRepository.findByAddressId(request.getAddressId());
         if (null != address) {
             Notification notification = new Notification();
@@ -78,8 +79,8 @@ public class NotificationService {
         return notificationMapper.toHistoryResponses(history);
     }
 
-    public List<HistoryResponse> getAllHistory(String email) {
-        User user = userRepository.findUserByEmail(email);
+    public List<HistoryResponse> getAllHistory(String guid) {
+        User user = userRepository.findUserByGuid(guid);
 
         List<History> history = new ArrayList<>();
         user.getNotifications().forEach(notification -> {
@@ -102,41 +103,29 @@ public class NotificationService {
         return notificationMapper.toNotificationResponses(Collections.singletonList(notification));
     }
 
-    public void notifyAssetTransfers() {
+    public void notifyMultiAssetTransfers() {
         List<User> users = userRepository.findAll();
-        List<String> hashes = new ArrayList<>();
         users.forEach(user -> {
             user.getNotifications().stream()
                     .filter(Notification::isNotify).forEach(notification -> {
                         String addressId = notification.getAddress().getAddressId();
-                        AtomicBoolean found = new AtomicBoolean(false);
-                        GetAssetTransfersResponse response = addressService.getAssetTransfers(addressId);
                         logger.info("Getting transfers for address " + addressId);
+                        GetAssetTransfersResponse response = addressService.getAssetTransfers(addressId);
 
-                        if (null != response && null != response.getResult().getTransfers()) {
-                            response.getResult().getTransfers().forEach(transfer -> {
-                                Instant instant = Instant.parse(transfer.getMetadata());
-                                Instant lastSent = Instant.parse(notification.getLastSent());
-                                if (instant.isAfter(lastSent)) {
-                                    logger.info("Transaction found!");
-                                    found.set(true);
-                                    hashes.add(transfer.getHash() + " Time: " + instant);
-                                }
-                            });
-                        }
-                        String result = String.join("\n\n", hashes);
-                        if (found.get()) {
-                            SimpleMailMessage message = buildMessage(user, notification, result);
+                        narrowByTime(response, notification.getLastSent());
+
+                        if (!response.getResult().getTransfers().isEmpty()) {
+                            SimpleMailMessage message = buildMessage(user, notification, response.getResult().getTransfers().toString());
                             javaMailSender.send(message);
                             logger.info("Sent email to " + user.getEmail());
                             notification.setLastSent(Instant.now().toString());
                             setHistory(notification, notification.getLastSent());
                         }
+
                     });
             notificationRepository.saveAll(user.getNotifications());
         });
     }
-
     private SimpleMailMessage buildMessage(User user, Notification notification, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());
@@ -152,6 +141,17 @@ public class NotificationService {
         history.setNotification(notification);
         notification.getHistory().add(history);
         historyRepository.save(history);
+    }
+
+    private void narrowByTime(GetAssetTransfersResponse response, String time){
+        List<TransfersResultResponse> transfers = new ArrayList<>();
+        response.getResult().getTransfers().forEach(transfer -> {
+            Instant instant = Instant.parse(transfer.getMetadata());
+            Instant lastSent = Instant.parse(time);
+            if(instant.isAfter(lastSent))
+                transfers.add(transfer);
+        } );
+        response.getResult().setTransfers(transfers);
     }
 
 }

@@ -25,8 +25,10 @@ public class NotificationController {
     }
 
     @PostMapping(value = "/notifications", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createNotification(@RequestBody CreateNotificationRequest request){
-        notificationService.createNotification(request);
+    public ResponseEntity<?> createNotification(@RequestBody CreateNotificationRequest request,
+                                                HttpServletRequest httpServletRequest){
+        String guid = httpServletRequest.getHeader("x-user-token");
+        notificationService.createNotification(guid, request);
         return ResponseEntity.ok().build();
     }
 
@@ -52,12 +54,13 @@ public class NotificationController {
     @Scheduled(cron = "0 0/5 * * * ?")
     @GetMapping("/notifications/notify/_AssetTransfers")
     public void notifyAssetTransfers(){
-        notificationService.notifyAssetTransfers();
+        notificationService.notifyMultiAssetTransfers();
     }
 
     @GetMapping("/notifications/history")
-    public ResponseEntity<?> getAllHistory(@Param("email") String email){
-        List<HistoryResponse> responseList = notificationService.getAllHistory(email);
+    public ResponseEntity<?> getAllHistory(HttpServletRequest httpServletRequest){
+        String guid = httpServletRequest.getHeader("x-user-token");
+        List<HistoryResponse> responseList = notificationService.getAllHistory(guid);
         return ResponseEntity.ok().body(responseList);
     }
 }
