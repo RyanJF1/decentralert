@@ -115,7 +115,7 @@ public class NotificationService {
                         narrowByTime(response, notification.getLastSent());
 
                         if (!response.getResult().getTransfers().isEmpty()) {
-                            SimpleMailMessage message = buildMessage(user, notification, response.getResult().getTransfers().toString());
+                            SimpleMailMessage message = buildMessage(user, notification, response);
                             javaMailSender.send(message);
                             logger.info("Sent email to " + user.getEmail());
                             notification.setLastSent(Instant.now().toString());
@@ -126,11 +126,16 @@ public class NotificationService {
             notificationRepository.saveAll(user.getNotifications());
         });
     }
-    private SimpleMailMessage buildMessage(User user, Notification notification, String body) {
+    private SimpleMailMessage buildMessage(User user, Notification notification, GetAssetTransfersResponse body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());
         message.setSubject("Get Asset Transfers for address: " + notification.getAddress().getNickname() + " [" + notification.getAddress().getAddressId() + "]");
-        message.setText(body);
+        List<String> list = new ArrayList<>();
+        for (TransfersResultResponse transfersResultResponse : body.getResult().getTransfers()) {
+            String hash = transfersResultResponse.getHash();
+            list.add(hash);
+        }
+        message.setText(String.valueOf(list));
 
         return message;
     }
