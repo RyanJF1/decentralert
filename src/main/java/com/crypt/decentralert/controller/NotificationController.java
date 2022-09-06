@@ -54,7 +54,7 @@ public class NotificationController {
     @Scheduled(cron = "0 0/5 * * * ?")
     @GetMapping("/notifications/notify/_AssetTransfers")
     public void notifyAssetTransfers(){
-        notificationService.notifyMultiAssetTransfers();
+        notificationService.notifyAllByAddress();
     }
 
     @GetMapping("/notifications/history")
